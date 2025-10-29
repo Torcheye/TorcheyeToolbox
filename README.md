@@ -1,6 +1,6 @@
 <div align="center">
 
-# TorchEye Games Studio Toolbox
+# TorchEye Games Toolbox
 
 ### *Innovatively beautiful.*
 
@@ -15,7 +15,7 @@ A comprehensive collection of tools, utilities, and resources to accelerate game
 
 ## About
 
-TorchEye Games Studio Toolbox is a centralized hub for game development tools and resources, designed to empower engineers at TorchEye Games and the wider game development community.
+TorchEye Games Toolbox is a centralized hub for game development tools and resources, designed to empower engineers at TorchEye Games and the wider game development community.
 
 ## What's Inside
 
