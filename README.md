@@ -1,10 +1,62 @@
-# TorcheyeUtility
-Unity utility scripts created for simple game managements.
+<div align="center">
 
-- `ApplicationManager`
-  - Restart, Exit, Scene navigation, Volume control
-  - Custom key mapping
+# TorchEye Games Studio Toolbox
 
-- `AudioManager`
-  - Singleton access for playing and controlling music and sound effects
-  - Two `AudioSource` for music and sound effects
+### *Innovatively beautiful.*
+
+A comprehensive collection of tools, utilities, and resources to accelerate game development.
+
+[![Website](https://img.shields.io/badge/Website-torcheyegames.com-blue?style=flat-square)](https://torcheyegames.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+</div>
+
+---
+
+## About
+
+TorchEye Games Studio Toolbox is a centralized hub for game development tools and resources, designed to empower engineers at TorchEye Games and the wider game development community.
+
+## What's Inside
+
+
+**Unity Plugins & Scripts**
+- Custom tools and extensions for Unity development
+
+**Game Development Utilities**
+- Helper scripts and productivity tools
+
+**AI Tools & Prompts**
+- Claude agents, templates, and AI-powered workflows
+
+**Documentation**
+- Best practices and development guides
+
+**Curated Resources**
+- Learning materials and useful links
+
+
+## Getting Started
+
+Browse the repository to find tools relevant to your project. Each tool includes its own documentation and usage instructions.
+
+## Contributing
+
+Contributions are welcome! Whether you're fixing bugs, adding new tools, or improving documentation, your input helps the community grow.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) – feel free to use, modify, and distribute.
+
+---
+
+<div align="center">
+
+### Contact
+
+**King Zhou** – Director
+[LinkedIn](https://www.linkedin.com/in/king-zhou/) • [hello@torcheyegames.com](mailto:hello@torcheyegames.com)
+
+**[TorchEye Games](https://torcheyegames.com)**
+
+</div>
