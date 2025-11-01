@@ -36,6 +36,32 @@ TorchEye Games Toolbox is a centralized hub for game development tools and resou
 - Learning materials and useful links
 
 
+## Available Tools
+
+### Image to WebP Converter
+
+A lightweight desktop GUI application for batch converting image files to WebP format, perfect for optimizing game assets and web resources.
+
+**Features:**
+- Batch convert PNG, JPG, JPEG, and GIF files to WebP
+- Animated WebP support for GIF animations
+- Drag & drop interface with modern dark theme
+- Adjustable quality settings (1-100)
+- Real-time file size comparison and reduction tracking
+- Cross-platform support (Windows, macOS, Linux)
+
+**Location:** [Tools/img2webp/](Tools/img2webp/)
+
+**Quick Start:**
+```bash
+cd Tools/img2webp
+pip install -r requirements.txt
+python converter.py
+```
+
+[View full documentation](Tools/img2webp/README.md)
+
+
 ## Getting Started
 
 Browse the repository to find tools relevant to your project. Each tool includes its own documentation and usage instructions.
