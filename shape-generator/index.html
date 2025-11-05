@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Vector Shape Generator - Create and customize primitive vector shapes with PNG export">
+    <title>Vector Shape Generator</title>
+
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        /* Main Layout - CSS Grid */
+        .app-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            height: 100vh;
+            padding: 2rem;
+        }
+
+        /* Canvas Area */
+        .canvas-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        #preview-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .controls-panel h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .shape-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .shape-selector label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .shape-selector select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .shape-selector select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        /* Shape Controls */
+        .shape-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* Range Sliders */
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="range"]:focus::-webkit-slider-thumb {
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        input[type="range"]:focus::-moz-range-thumb {
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Number Inputs */
+        input[type="number"] {
+            width: 80px;
+            padding: 0.4rem;
+            font-size: 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+
+        /* Color Pickers */
+        input[type="color"] {
+            width: 60px;
+            height: 40px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        input[type="color"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* Buttons */
+        button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+            background: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Export Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        input.error {
+            border-color: #dc3545;
+        }
+
+        /* DPI Presets */
+        .dpi-presets {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .dpi-preset {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dpi-preset:hover {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .canvas-area {
+                min-height: 400px;
+            }
+        }
+
+        /* Unsupported Browser Error */
+        .browser-error {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .browser-error.active {
+            display: block;
+        }
+
+        .browser-error h1 {
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        .browser-error p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Canvas Preview Area -->
+        <div class="canvas-area" role="region" aria-label="Shape preview">
+            <canvas id="preview-canvas" width="600" height="600" aria-label="Vector shape preview canvas"></canvas>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel" role="region" aria-label="Shape controls">
+            <h1>Vector Shape Generator</h1>
+
+            <!-- Shape Type Selector -->
+            <section class="shape-selector">
+                <label for="shape-type">Shape Type:</label>
+                <select id="shape-type" aria-label="Select shape type">
+                    <option value="circle">Circle</option>
+                    <option value="rectangle">Rectangle</option>
+                </select>
+            </section>
+
+            <!-- Circle Controls -->
+            <section id="circle-controls" class="shape-controls" aria-label="Circle properties">
+                <div class="control-group">
+                    <label for="circle-radius">Radius (px):</label>
+                    <div class="control-row">
+                        <input type="range" id="circle-radius" min="1" max="1000" value="100" step="1">
+                        <input type="number" id="circle-radius-num" min="1" max="1000" value="100">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="circle-fill-color">Fill Color:</label>
+                    <div class="control-row">
+                        <input type="color" id="circle-fill-color" value="#ffffff">
+                        <span id="circle-fill-hex">#ffffff</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="circle-stroke-color">Stroke Color:</label>
+                    <div class="control-row">
+                        <input type="color" id="circle-stroke-color" value="#000000">
+                        <span id="circle-stroke-hex">#000000</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="circle-stroke-width">Stroke Width (px):</label>
+                    <div class="control-row">
+                        <input type="range" id="circle-stroke-width" min="0.5" max="50" value="2" step="0.5">
+                        <input type="number" id="circle-stroke-width-num" min="0.5" max="50" value="2" step="0.5">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="circle-opacity">Opacity (%):</label>
+                    <div class="control-row">
+                        <input type="range" id="circle-opacity" min="0" max="100" value="100" step="1">
+                        <input type="number" id="circle-opacity-num" min="0" max="100" value="100">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Rectangle Controls -->
+            <section id="rectangle-controls" class="shape-controls hidden" aria-label="Rectangle properties">
+                <div class="control-group">
+                    <label for="rectangle-width">Width (px):</label>
+                    <div class="control-row">
+                        <input type="range" id="rectangle-width" min="1" max="1000" value="200" step="1">
+                        <input type="number" id="rectangle-width-num" min="1" max="1000" value="200">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="rectangle-height">Height (px):</label>
+                    <div class="control-row">
+                        <input type="range" id="rectangle-height" min="1" max="1000" value="150" step="1">
+                        <input type="number" id="rectangle-height-num" min="1" max="1000" value="150">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="rectangle-fill-color">Fill Color:</label>
+                    <div class="control-row">
+                        <input type="color" id="rectangle-fill-color" value="#ffffff">
+                        <span id="rectangle-fill-hex">#ffffff</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="rectangle-stroke-color">Stroke Color:</label>
+                    <div class="control-row">
+                        <input type="color" id="rectangle-stroke-color" value="#000000">
+                        <span id="rectangle-stroke-hex">#000000</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="rectangle-stroke-width">Stroke Width (px):</label>
+                    <div class="control-row">
+                        <input type="range" id="rectangle-stroke-width" min="0.5" max="50" value="2" step="0.5">
+                        <input type="number" id="rectangle-stroke-width-num" min="0.5" max="50" value="2" step="0.5">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="rectangle-opacity">Opacity (%):</label>
+                    <div class="control-row">
+                        <input type="range" id="rectangle-opacity" min="0" max="100" value="100" step="1">
+                        <input type="number" id="rectangle-opacity-num" min="0" max="100" value="100">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Export Button -->
+            <button id="export-btn" aria-label="Export shape as PNG">Export to PNG</button>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="modal" role="dialog" aria-labelledby="export-modal-title" aria-modal="true">
+        <div class="modal-content">
+            <h2 id="export-modal-title">Export as PNG</h2>
+
+            <div class="control-group">
+                <label for="export-width">Width (px):</label>
+                <input type="number" id="export-width" min="1" max="5000" value="800">
+                <span class="error-message" id="export-width-error">Width must be between 1 and 5000px</span>
+            </div>
+
+            <div class="control-group">
+                <label for="export-height">Height (px):</label>
+                <input type="number" id="export-height" min="1" max="5000" value="600">
+                <span class="error-message" id="export-height-error">Height must be between 1 and 5000px</span>
+            </div>
+
+            <div class="control-group">
+                <label for="export-dpi">DPI (Resolution):</label>
+                <input type="number" id="export-dpi" min="1" max="600" value="72">
+                <div class="dpi-presets">
+                    <span class="dpi-preset" data-dpi="72">72 DPI (Web)</span>
+                    <span class="dpi-preset" data-dpi="150">150 DPI (Print)</span>
+                    <span class="dpi-preset" data-dpi="300">300 DPI (High-Res)</span>
+                </div>
+                <span class="error-message" id="export-dpi-error">DPI must be between 1 and 600</span>
+            </div>
+
+            <div class="control-group">
+                <label for="export-filename">Filename:</label>
+                <input type="text" id="export-filename" value="shape-export" pattern="[a-zA-Z0-9_-]+">
+                <span class="error-message" id="export-filename-error">Filename can only contain letters, numbers, hyphens, and underscores</span>
+            </div>
+
+            <div class="modal-buttons">
+                <button id="export-cancel" class="btn-secondary">Cancel</button>
+                <button id="export-confirm">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browser Error Message -->
+    <div id="browser-error" class="browser-error">
+        <h1>Browser Not Supported</h1>
+        <p>This application requires HTML5 Canvas support.</p>
+        <p>Please upgrade to a modern browser (Chrome, Firefox, Safari, or Edge).</p>
+    </div>
+
+    <script>
+        // ============================================
+        // APPLICATION STATE
+        // ============================================
+        const state = {
+            currentShape: 'circle',
+            shapes: {
+                circle: {
+                    radius: 100,
+                    fillColor: '#ffffff',
+                    strokeColor: '#000000',
+                    strokeWidth: 2,
+                    opacity: 100
+                },
+                rectangle: {
+                    width: 200,
+                    height: 150,
+                    fillColor: '#ffffff',
+                    strokeColor: '#000000',
+                    strokeWidth: 2,
+                    opacity: 100
+                }
+            },
+            exportSettings: {
+                width: 800,
+                height: 600,
+                dpi: 72,
+                filename: 'shape-export'
+            },
+            preferences: {
+                rememberLastShape: true,
+                lastShapeType: null,
+                lastExportSettings: {}
+            }
+        };
+
+        // Canvas elements
+        let canvas, ctx;
+        let rafId = null;
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        /**
+         * Convert hex color to RGBA string
+         */
+        function hexToRGBA(hex, opacity) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            const a = opacity / 100;
+            return `rgba(${r}, ${g}, ${b}, ${a})`;
+        }
+
+        /**
+         * Validate shape property
+         */
+        function validateShapeProperty(shapeType, property, value) {
+            const validations = {
+                circle: {
+                    radius: { min: 1, max: 1000 },
+                    strokeWidth: { min: 0.5, max: 50 },
+                    opacity: { min: 0, max: 100 }
+                },
+                rectangle: {
+                    width: { min: 1, max: 1000 },
+                    height: { min: 1, max: 1000 },
+                    strokeWidth: { min: 0.5, max: 50 },
+                    opacity: { min: 0, max: 100 }
+                }
+            };
+
+            const rule = validations[shapeType]?.[property];
+            if (rule) {
+                return value >= rule.min && value <= rule.max;
+            }
+            return true;
+        }
+
+        /**
+         * Validate export settings
+         */
+        function validateExportSettings() {
+            const { width, height, dpi, filename } = state.exportSettings;
+
+            let isValid = true;
+
+            // Validate width
+            if (width < 1 || width > 5000) {
+                document.getElementById('export-width').classList.add('error');
+                document.getElementById('export-width-error').classList.add('active');
+                isValid = false;
+            } else {
+                document.getElementById('export-width').classList.remove('error');
+                document.getElementById('export-width-error').classList.remove('active');
+            }
+
+            // Validate height
+            if (height < 1 || height > 5000) {
+                document.getElementById('export-height').classList.add('error');
+                document.getElementById('export-height-error').classList.add('active');
+                isValid = false;
+            } else {
+                document.getElementById('export-height').classList.remove('error');
+                document.getElementById('export-height-error').classList.remove('active');
+            }
+
+            // Validate DPI
+            if (dpi < 1 || dpi > 600) {
+                document.getElementById('export-dpi').classList.add('error');
+                document.getElementById('export-dpi-error').classList.add('active');
+                isValid = false;
+            } else {
+                document.getElementById('export-dpi').classList.remove('error');
+                document.getElementById('export-dpi-error').classList.remove('active');
+            }
+
+            // Validate filename
+            const filenamePattern = /^[a-zA-Z0-9_-]+$/;
+            if (!filename || !filenamePattern.test(filename)) {
+                document.getElementById('export-filename').classList.add('error');
+                document.getElementById('export-filename-error').classList.add('active');
+                isValid = false;
+            } else {
+                document.getElementById('export-filename').classList.remove('error');
+                document.getElementById('export-filename-error').classList.remove('active');
+            }
+
+            return isValid;
+        }
+
+        // ============================================
+        // LOCALSTORAGE PERSISTENCE
+        // ============================================
+
+        function savePreferences() {
+            try {
+                const prefs = {
+                    rememberLastShape: state.preferences.rememberLastShape,
+                    lastShapeType: state.currentShape,
+                    lastExportSettings: state.exportSettings,
+                    version: '1.0.0'
+                };
+                localStorage.setItem('shapeGeneratorPreferences', JSON.stringify(prefs));
+            } catch (error) {
+                console.warn('Failed to save preferences:', error);
+            }
+        }
+
+        function loadPreferences() {
+            try {
+                const saved = localStorage.getItem('shapeGeneratorPreferences');
+                if (saved) {
+                    const prefs = JSON.parse(saved);
+                    if (prefs.rememberLastShape && prefs.lastShapeType) {
+                        state.currentShape = prefs.lastShapeType;
+                    }
+                    if (prefs.lastExportSettings) {
+                        state.exportSettings = { ...state.exportSettings, ...prefs.lastExportSettings };
+                    }
+                    state.preferences = prefs;
+                }
+            } catch (error) {
+                console.warn('Failed to load preferences:', error);
+            }
+        }
+
+        // ============================================
+        // CANVAS RENDERING
+        // ============================================
+
+        /**
+         * Clear canvas with optional background color
+         */
+        function clearCanvas(context = ctx, backgroundColor = '#ffffff') {
+            const targetCanvas = context.canvas;
+            context.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+            if (backgroundColor) {
+                context.fillStyle = backgroundColor;
+                context.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
+            }
+        }
+
+        /**
+         * Draw circle on canvas
+         */
+        function drawCircle(context, shape, centerX, centerY) {
+            const { radius, fillColor, strokeColor, strokeWidth, opacity } = shape;
+
+            if (radius <= 0) return;
+
+            context.save();
+            context.globalAlpha = opacity / 100;
+
+            // Fill
+            context.fillStyle = fillColor;
+            context.beginPath();
+            context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            context.fill();
+
+            // Stroke
+            if (strokeWidth > 0) {
+                context.strokeStyle = strokeColor;
+                context.lineWidth = strokeWidth;
+                context.stroke();
+            }
+
+            context.restore();
+        }
+
+        /**
+         * Draw rectangle on canvas
+         */
+        function drawRectangle(context, shape, centerX, centerY) {
+            const { width, height, fillColor, strokeColor, strokeWidth, opacity } = shape;
+
+            if (width <= 0 || height <= 0) return;
+
+            const x = centerX - (width / 2);
+            const y = centerY - (height / 2);
+
+            context.save();
+            context.globalAlpha = opacity / 100;
+
+            // Fill
+            context.fillStyle = fillColor;
+            context.fillRect(x, y, width, height);
+
+            // Stroke
+            if (strokeWidth > 0) {
+                context.strokeStyle = strokeColor;
+                context.lineWidth = strokeWidth;
+                context.strokeRect(x, y, width, height);
+            }
+
+            context.restore();
+        }
+
+        /**
+         * Render current shape to canvas
+         */
+        function renderCurrentShape() {
+            clearCanvas();
+
+            const shapeType = state.currentShape;
+            const shape = state.shapes[shapeType];
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            if (shapeType === 'circle') {
+                drawCircle(ctx, shape, centerX, centerY);
+            } else if (shapeType === 'rectangle') {
+                drawRectangle(ctx, shape, centerX, centerY);
+            }
+        }
+
+        /**
+         * Schedule render using requestAnimationFrame
+         */
+        function scheduleRender() {
+            if (rafId) cancelAnimationFrame(rafId);
+
+            rafId = requestAnimationFrame(() => {
+                renderCurrentShape();
+                rafId = null;
+            });
+        }
+
+        // ============================================
+        // STATE UPDATE FUNCTIONS
+        // ============================================
+
+        /**
+         * Update shape property
+         */
+        function updateShape(property, value) {
+            const shapeType = state.currentShape;
+            const shape = state.shapes[shapeType];
+
+            // Validate
+            if (!validateShapeProperty(shapeType, property, value) &&
+                !['fillColor', 'strokeColor'].includes(property)) {
+                return false;
+            }
+
+            // Update state
+            shape[property] = value;
+
+            // Trigger side effects
+            scheduleRender();
+            savePreferences();
+
+            return true;
+        }
+
+        /**
+         * Switch shape type
+         */
+        function switchShape(newType) {
+            if (!['circle', 'rectangle'].includes(newType)) {
+                console.error('Invalid shape type:', newType);
+                return;
+            }
+
+            state.currentShape = newType;
+
+            // Update UI visibility
+            const circleControls = document.getElementById('circle-controls');
+            const rectangleControls = document.getElementById('rectangle-controls');
+
+            if (newType === 'circle') {
+                circleControls.classList.remove('hidden');
+                rectangleControls.classList.add('hidden');
+            } else {
+                circleControls.classList.add('hidden');
+                rectangleControls.classList.remove('hidden');
+            }
+
+            // Render new shape
+            scheduleRender();
+            savePreferences();
+        }
+
+        // ============================================
+        // EXPORT FUNCTIONALITY
+        // ============================================
+
+        /**
+         * Open export modal
+         */
+        function openExportModal() {
+            const modal = document.getElementById('export-modal');
+            modal.classList.add('active');
+
+            // Populate with current settings
+            document.getElementById('export-width').value = state.exportSettings.width;
+            document.getElementById('export-height').value = state.exportSettings.height;
+            document.getElementById('export-dpi').value = state.exportSettings.dpi;
+            document.getElementById('export-filename').value = state.exportSettings.filename;
+
+            // Focus first input for accessibility
+            document.getElementById('export-width').focus();
+        }
+
+        /**
+         * Close export modal
+         */
+        function closeExportModal() {
+            const modal = document.getElementById('export-modal');
+            modal.classList.remove('active');
+        }
+
+        /**
+         * Export shape as PNG
+         */
+        async function exportToPNG() {
+            const { width, height, dpi, filename } = state.exportSettings;
+
+            // Calculate DPI scaling
+            const scale = dpi / 72;
+
+            // Create temporary canvas
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = width * scale;
+            exportCanvas.height = height * scale;
+
+            const exportCtx = exportCanvas.getContext('2d');
+            exportCtx.scale(scale, scale);
+
+            // Render shape to export canvas
+            clearCanvas(exportCtx, '#ffffff');
+
+            const shapeType = state.currentShape;
+            const shape = state.shapes[shapeType];
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            if (shapeType === 'circle') {
+                drawCircle(exportCtx, shape, centerX, centerY);
+            } else if (shapeType === 'rectangle') {
+                drawRectangle(exportCtx, shape, centerX, centerY);
+            }
+
+            // Convert to blob and download
+            return new Promise((resolve, reject) => {
+                exportCanvas.toBlob(blob => {
+                    if (blob) {
+                        downloadBlob(blob, `${filename}.png`);
+                        resolve();
+                    } else {
+                        reject(new Error('Failed to generate PNG blob'));
+                    }
+                }, 'image/png');
+            });
+        }
+
+        /**
+         * Trigger browser download
+         */
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.style.display = 'none';
+
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================
+        // EVENT HANDLERS
+        // ============================================
+
+        function setupEventHandlers() {
+            // Shape type selector
+            document.getElementById('shape-type').addEventListener('change', (e) => {
+                switchShape(e.target.value);
+            });
+
+            // Circle controls
+            setupShapeControls('circle', ['radius', 'fill-color', 'stroke-color', 'stroke-width', 'opacity']);
+
+            // Rectangle controls
+            setupShapeControls('rectangle', ['width', 'height', 'fill-color', 'stroke-color', 'stroke-width', 'opacity']);
+
+            // Export button
+            document.getElementById('export-btn').addEventListener('click', openExportModal);
+
+            // Export modal controls
+            document.getElementById('export-cancel').addEventListener('click', closeExportModal);
+
+            document.getElementById('export-confirm').addEventListener('click', async () => {
+                // Update export settings from inputs
+                state.exportSettings.width = parseInt(document.getElementById('export-width').value);
+                state.exportSettings.height = parseInt(document.getElementById('export-height').value);
+                state.exportSettings.dpi = parseInt(document.getElementById('export-dpi').value);
+                state.exportSettings.filename = document.getElementById('export-filename').value;
+
+                // Validate
+                if (!validateExportSettings()) {
+                    return;
+                }
+
+                try {
+                    await exportToPNG();
+                    closeExportModal();
+                    savePreferences();
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    alert('Export failed. Please try different settings.');
+                }
+            });
+
+            // DPI presets
+            document.querySelectorAll('.dpi-preset').forEach(preset => {
+                preset.addEventListener('click', () => {
+                    const dpi = parseInt(preset.getAttribute('data-dpi'));
+                    document.getElementById('export-dpi').value = dpi;
+                    state.exportSettings.dpi = dpi;
+                });
+            });
+
+            // Export settings inputs
+            ['width', 'height', 'dpi', 'filename'].forEach(field => {
+                const input = document.getElementById(`export-${field}`);
+                input.addEventListener('input', () => {
+                    if (field === 'filename') {
+                        state.exportSettings[field] = input.value;
+                    } else {
+                        state.exportSettings[field] = parseInt(input.value) || 0;
+                    }
+                });
+            });
+
+            // Keyboard accessibility: Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('export-modal');
+                    if (modal.classList.contains('active')) {
+                        closeExportModal();
+                    }
+                }
+            });
+
+            // Click outside modal to close
+            document.getElementById('export-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'export-modal') {
+                    closeExportModal();
+                }
+            });
+        }
+
+        /**
+         * Setup event handlers for shape controls
+         */
+        function setupShapeControls(shapeType, properties) {
+            properties.forEach(prop => {
+                const propName = prop.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+
+                if (prop === 'fill-color' || prop === 'stroke-color') {
+                    // Color picker
+                    const colorInput = document.getElementById(`${shapeType}-${prop}`);
+                    const hexDisplay = document.getElementById(`${shapeType}-${prop.replace('color', 'hex')}`);
+
+                    colorInput.addEventListener('input', (e) => {
+                        const value = e.target.value;
+                        updateShape(propName, value);
+                        hexDisplay.textContent = value;
+                    });
+                } else {
+                    // Range slider
+                    const rangeInput = document.getElementById(`${shapeType}-${prop}`);
+                    const numberInput = document.getElementById(`${shapeType}-${prop}-num`);
+
+                    if (rangeInput && numberInput) {
+                        // Sync slider → number
+                        rangeInput.addEventListener('input', (e) => {
+                            const value = parseFloat(e.target.value);
+                            numberInput.value = value;
+                            updateShape(propName, value);
+                        });
+
+                        // Sync number → slider
+                        numberInput.addEventListener('input', (e) => {
+                            const value = parseFloat(e.target.value);
+                            rangeInput.value = value;
+                            updateShape(propName, value);
+                        });
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        function checkCanvasSupport() {
+            const testCanvas = document.createElement('canvas');
+            const supported = !!(testCanvas.getContext && testCanvas.getContext('2d'));
+
+            if (!supported) {
+                document.getElementById('browser-error').classList.add('active');
+                document.querySelector('.app-container').style.display = 'none';
+            }
+
+            return supported;
+        }
+
+        function initializeApp() {
+            // Check browser support
+            if (!checkCanvasSupport()) {
+                return;
+            }
+
+            // Load preferences
+            loadPreferences();
+
+            // Initialize canvas
+            canvas = document.getElementById('preview-canvas');
+            ctx = canvas.getContext('2d');
+
+            // Setup event handlers
+            setupEventHandlers();
+
+            // Set initial shape type
+            document.getElementById('shape-type').value = state.currentShape;
+            switchShape(state.currentShape);
+
+            // Initial render
+            renderCurrentShape();
+        }
+
+        // Start application when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+</html>
