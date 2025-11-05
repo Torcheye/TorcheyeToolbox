@@ -2,7 +2,9 @@
 
 # TorchEye Games Toolbox
 
-*A collection of tools and utilities to accelerate game development.*
+### *Innovatively beautiful.*
+
+A comprehensive collection of tools, utilities, and resources to accelerate game development.
 
 [![Website](https://img.shields.io/badge/Website-torcheyegames.com-blue?style=flat-square)](https://torcheyegames.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
@@ -11,52 +13,61 @@
 
 ---
 
-## Tools
+## About
+
+TorchEye Games Toolbox is a centralized hub for game development tools and resources, designed to empower engineers at TorchEye Games and the wider game development community.
+
+## What's Inside
+
+
+**Unity Plugins & Scripts**
+- Custom tools and extensions for Unity development
+
+**Game Development Utilities**
+- Helper scripts and productivity tools
+
+**AI Tools & Prompts**
+- Claude agents, templates, and AI-powered workflows
+
+**Documentation**
+- Best practices and development guides
+
+**Curated Resources**
+- Learning materials and useful links
+
+
+## Available Tools
 
 ### Vector Shape Generator
-Browser-based tool for creating outline shapes with customizable canvas and stroke properties. Perfect for creating simple geometric assets.
 
-**Features:**
-- Outline-only shapes (circle, rectangle)
-- Adjustable canvas size (width × height in pixels)
-- Transparent or colored backgrounds
-- Customizable stroke color and width
-- PNG export
-
-**Location:** [shape-generator/index.html](shape-generator/index.html)
-
----
+Browser-based tool for creating outline-only geometric shapes with customizable canvas size, stroke color, and transparent or colored backgrounds. [Location: shape-generator/index.html](shape-generator/index.html)
 
 ### Image to WebP Converter
-Desktop GUI application for batch converting images to WebP format, optimizing game assets and web resources.
 
-**Features:**
-- Batch convert PNG, JPG, JPEG, GIF to WebP
-- Animated WebP support
-- Drag & drop interface
-- Quality settings (1-100)
-- File size comparison
-- Cross-platform (Windows, macOS, Linux)
+Desktop GUI application for batch converting images (PNG, JPG, GIF) to WebP format with adjustable quality settings and drag-and-drop interface. [Location: Tools/img2webp/](Tools/img2webp/)
 
-**Location:** [Tools/img2webp/](Tools/img2webp/)
 
-**Quick Start:**
-```bash
-cd Tools/img2webp
-pip install -r requirements.txt
-python converter.py
-```
+## Getting Started
 
----
+Browse the repository to find tools relevant to your project. Each tool includes its own documentation and usage instructions.
+
+## Contributing
+
+Contributions are welcome! Whether you're fixing bugs, adding new tools, or improving documentation, your input helps the community grow.
 
 ## License
 
-[MIT License](LICENSE) – free to use, modify, and distribute.
+This project is licensed under the [MIT License](LICENSE) – feel free to use, modify, and distribute.
 
 ---
 
 <div align="center">
 
-**[TorchEye Games](https://torcheyegames.com)** • [hello@torcheyegames.com](mailto:hello@torcheyegames.com)
+### Contact
+
+**King Zhou** – Director
+[LinkedIn](https://www.linkedin.com/in/king-zhou/) • [hello@torcheyegames.com](mailto:hello@torcheyegames.com)
+
+**[TorchEye Games](https://torcheyegames.com)**
 
 </div>
