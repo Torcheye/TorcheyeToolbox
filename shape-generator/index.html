@@ -40,6 +40,14 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             position: relative;
+            /* Checkered background to show transparency */
+            background-image:
+                linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
+                linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
+                linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
 
         #preview-canvas {
@@ -186,6 +194,20 @@
             border-color: #007bff;
         }
 
+        /* Checkboxes */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+
+        .control-group label:has(input[type="checkbox"]) {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
         /* Buttons */
         button {
             padding: 0.75rem 1.5rem;
@@ -277,29 +299,6 @@
             border-color: #dc3545;
         }
 
-        /* DPI Presets */
-        .dpi-presets {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .dpi-preset {
-            padding: 0.25rem 0.75rem;
-            font-size: 0.85rem;
-            background: #e9ecef;
-            border: 1px solid #dee2e6;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .dpi-preset:hover {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
         /* Hidden class */
         .hidden {
             display: none !important;
@@ -359,6 +358,40 @@
         <div class="controls-panel" role="region" aria-label="Shape controls">
             <h1>Vector Shape Generator</h1>
 
+            <!-- Canvas Size Controls -->
+            <section class="shape-controls" aria-label="Canvas settings">
+                <div class="control-group">
+                    <label for="canvas-width">Canvas Width (px):</label>
+                    <div class="control-row">
+                        <input type="range" id="canvas-width" min="100" max="2000" value="800" step="10">
+                        <input type="number" id="canvas-width-num" min="100" max="2000" value="800">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="canvas-height">Canvas Height (px):</label>
+                    <div class="control-row">
+                        <input type="range" id="canvas-height" min="100" max="2000" value="800" step="10">
+                        <input type="number" id="canvas-height-num" min="100" max="2000" value="800">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="bg-transparent" checked>
+                        Transparent Background
+                    </label>
+                </div>
+
+                <div class="control-group" id="bg-color-group">
+                    <label for="bg-color">Background Color:</label>
+                    <div class="control-row">
+                        <input type="color" id="bg-color" value="#ffffff">
+                        <span id="bg-color-hex">#ffffff</span>
+                    </div>
+                </div>
+            </section>
+
             <!-- Shape Type Selector -->
             <section class="shape-selector">
                 <label for="shape-type">Shape Type:</label>
@@ -379,14 +412,6 @@
                 </div>
 
                 <div class="control-group">
-                    <label for="circle-fill-color">Fill Color:</label>
-                    <div class="control-row">
-                        <input type="color" id="circle-fill-color" value="#ffffff">
-                        <span id="circle-fill-hex">#ffffff</span>
-                    </div>
-                </div>
-
-                <div class="control-group">
                     <label for="circle-stroke-color">Stroke Color:</label>
                     <div class="control-row">
                         <input type="color" id="circle-stroke-color" value="#000000">
@@ -399,14 +424,6 @@
                     <div class="control-row">
                         <input type="range" id="circle-stroke-width" min="0.5" max="50" value="2" step="0.5">
                         <input type="number" id="circle-stroke-width-num" min="0.5" max="50" value="2" step="0.5">
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label for="circle-opacity">Opacity (%):</label>
-                    <div class="control-row">
-                        <input type="range" id="circle-opacity" min="0" max="100" value="100" step="1">
-                        <input type="number" id="circle-opacity-num" min="0" max="100" value="100">
                     </div>
                 </div>
             </section>
@@ -430,14 +447,6 @@
                 </div>
 
                 <div class="control-group">
-                    <label for="rectangle-fill-color">Fill Color:</label>
-                    <div class="control-row">
-                        <input type="color" id="rectangle-fill-color" value="#ffffff">
-                        <span id="rectangle-fill-hex">#ffffff</span>
-                    </div>
-                </div>
-
-                <div class="control-group">
                     <label for="rectangle-stroke-color">Stroke Color:</label>
                     <div class="control-row">
                         <input type="color" id="rectangle-stroke-color" value="#000000">
@@ -452,14 +461,6 @@
                         <input type="number" id="rectangle-stroke-width-num" min="0.5" max="50" value="2" step="0.5">
                     </div>
                 </div>
-
-                <div class="control-group">
-                    <label for="rectangle-opacity">Opacity (%):</label>
-                    <div class="control-row">
-                        <input type="range" id="rectangle-opacity" min="0" max="100" value="100" step="1">
-                        <input type="number" id="rectangle-opacity-num" min="0" max="100" value="100">
-                    </div>
-                </div>
             </section>
 
             <!-- Export Button -->
@@ -471,29 +472,6 @@
     <div id="export-modal" class="modal" role="dialog" aria-labelledby="export-modal-title" aria-modal="true">
         <div class="modal-content">
             <h2 id="export-modal-title">Export as PNG</h2>
-
-            <div class="control-group">
-                <label for="export-width">Width (px):</label>
-                <input type="number" id="export-width" min="1" max="5000" value="800">
-                <span class="error-message" id="export-width-error">Width must be between 1 and 5000px</span>
-            </div>
-
-            <div class="control-group">
-                <label for="export-height">Height (px):</label>
-                <input type="number" id="export-height" min="1" max="5000" value="600">
-                <span class="error-message" id="export-height-error">Height must be between 1 and 5000px</span>
-            </div>
-
-            <div class="control-group">
-                <label for="export-dpi">DPI (Resolution):</label>
-                <input type="number" id="export-dpi" min="1" max="600" value="72">
-                <div class="dpi-presets">
-                    <span class="dpi-preset" data-dpi="72">72 DPI (Web)</span>
-                    <span class="dpi-preset" data-dpi="150">150 DPI (Print)</span>
-                    <span class="dpi-preset" data-dpi="300">300 DPI (High-Res)</span>
-                </div>
-                <span class="error-message" id="export-dpi-error">DPI must be between 1 and 600</span>
-            </div>
 
             <div class="control-group">
                 <label for="export-filename">Filename:</label>
@@ -521,27 +499,28 @@
         // ============================================
         const state = {
             currentShape: 'circle',
+            canvas: {
+                width: 800,
+                height: 800
+            },
+            background: {
+                transparent: true,
+                color: '#ffffff'
+            },
             shapes: {
                 circle: {
                     radius: 100,
-                    fillColor: '#ffffff',
-                    strokeColor: '#000000',
                     strokeWidth: 2,
-                    opacity: 100
+                    strokeColor: '#000000'
                 },
                 rectangle: {
                     width: 200,
                     height: 150,
-                    fillColor: '#ffffff',
-                    strokeColor: '#000000',
                     strokeWidth: 2,
-                    opacity: 100
+                    strokeColor: '#000000'
                 }
             },
             exportSettings: {
-                width: 800,
-                height: 600,
-                dpi: 72,
                 filename: 'shape-export'
             },
             preferences: {
@@ -560,31 +539,18 @@
         // ============================================
 
         /**
-         * Convert hex color to RGBA string
-         */
-        function hexToRGBA(hex, opacity) {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
-            const a = opacity / 100;
-            return `rgba(${r}, ${g}, ${b}, ${a})`;
-        }
-
-        /**
          * Validate shape property
          */
         function validateShapeProperty(shapeType, property, value) {
             const validations = {
                 circle: {
                     radius: { min: 1, max: 1000 },
-                    strokeWidth: { min: 0.5, max: 50 },
-                    opacity: { min: 0, max: 100 }
+                    strokeWidth: { min: 0.5, max: 50 }
                 },
                 rectangle: {
                     width: { min: 1, max: 1000 },
                     height: { min: 1, max: 1000 },
-                    strokeWidth: { min: 0.5, max: 50 },
-                    opacity: { min: 0, max: 100 }
+                    strokeWidth: { min: 0.5, max: 50 }
                 }
             };
 
@@ -599,39 +565,9 @@
          * Validate export settings
          */
         function validateExportSettings() {
-            const { width, height, dpi, filename } = state.exportSettings;
+            const { filename } = state.exportSettings;
 
             let isValid = true;
-
-            // Validate width
-            if (width < 1 || width > 5000) {
-                document.getElementById('export-width').classList.add('error');
-                document.getElementById('export-width-error').classList.add('active');
-                isValid = false;
-            } else {
-                document.getElementById('export-width').classList.remove('error');
-                document.getElementById('export-width-error').classList.remove('active');
-            }
-
-            // Validate height
-            if (height < 1 || height > 5000) {
-                document.getElementById('export-height').classList.add('error');
-                document.getElementById('export-height-error').classList.add('active');
-                isValid = false;
-            } else {
-                document.getElementById('export-height').classList.remove('error');
-                document.getElementById('export-height-error').classList.remove('active');
-            }
-
-            // Validate DPI
-            if (dpi < 1 || dpi > 600) {
-                document.getElementById('export-dpi').classList.add('error');
-                document.getElementById('export-dpi-error').classList.add('active');
-                isValid = false;
-            } else {
-                document.getElementById('export-dpi').classList.remove('error');
-                document.getElementById('export-dpi-error').classList.remove('active');
-            }
 
             // Validate filename
             const filenamePattern = /^[a-zA-Z0-9_-]+$/;
@@ -690,12 +626,12 @@
         /**
          * Clear canvas with optional background color
          */
-        function clearCanvas(context = ctx, backgroundColor = '#ffffff') {
+        function clearCanvas(context = ctx) {
             const targetCanvas = context.canvas;
             context.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
 
-            if (backgroundColor) {
-                context.fillStyle = backgroundColor;
+            if (!state.background.transparent) {
+                context.fillStyle = state.background.color;
                 context.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
             }
         }
@@ -704,20 +640,16 @@
          * Draw circle on canvas
          */
         function drawCircle(context, shape, centerX, centerY) {
-            const { radius, fillColor, strokeColor, strokeWidth, opacity } = shape;
+            const { radius, strokeWidth, strokeColor } = shape;
 
             if (radius <= 0) return;
 
             context.save();
-            context.globalAlpha = opacity / 100;
 
-            // Fill
-            context.fillStyle = fillColor;
+            // Draw outline only (no fill)
             context.beginPath();
             context.arc(centerX, centerY, radius, 0, Math.PI * 2);
-            context.fill();
 
-            // Stroke
             if (strokeWidth > 0) {
                 context.strokeStyle = strokeColor;
                 context.lineWidth = strokeWidth;
@@ -731,7 +663,7 @@
          * Draw rectangle on canvas
          */
         function drawRectangle(context, shape, centerX, centerY) {
-            const { width, height, fillColor, strokeColor, strokeWidth, opacity } = shape;
+            const { width, height, strokeWidth, strokeColor } = shape;
 
             if (width <= 0 || height <= 0) return;
 
@@ -739,13 +671,8 @@
             const y = centerY - (height / 2);
 
             context.save();
-            context.globalAlpha = opacity / 100;
 
-            // Fill
-            context.fillStyle = fillColor;
-            context.fillRect(x, y, width, height);
-
-            // Stroke
+            // Draw outline only (no fill)
             if (strokeWidth > 0) {
                 context.strokeStyle = strokeColor;
                 context.lineWidth = strokeWidth;
@@ -797,8 +724,7 @@
             const shape = state.shapes[shapeType];
 
             // Validate
-            if (!validateShapeProperty(shapeType, property, value) &&
-                !['fillColor', 'strokeColor'].includes(property)) {
+            if (!validateShapeProperty(shapeType, property, value)) {
                 return false;
             }
 
@@ -852,13 +778,10 @@
             modal.classList.add('active');
 
             // Populate with current settings
-            document.getElementById('export-width').value = state.exportSettings.width;
-            document.getElementById('export-height').value = state.exportSettings.height;
-            document.getElementById('export-dpi').value = state.exportSettings.dpi;
             document.getElementById('export-filename').value = state.exportSettings.filename;
 
             // Focus first input for accessibility
-            document.getElementById('export-width').focus();
+            document.getElementById('export-filename').focus();
         }
 
         /**
@@ -873,21 +796,18 @@
          * Export shape as PNG
          */
         async function exportToPNG() {
-            const { width, height, dpi, filename } = state.exportSettings;
-
-            // Calculate DPI scaling
-            const scale = dpi / 72;
+            const { filename } = state.exportSettings;
+            const { width, height } = state.canvas;
 
             // Create temporary canvas
             const exportCanvas = document.createElement('canvas');
-            exportCanvas.width = width * scale;
-            exportCanvas.height = height * scale;
+            exportCanvas.width = width;
+            exportCanvas.height = height;
 
             const exportCtx = exportCanvas.getContext('2d');
-            exportCtx.scale(scale, scale);
 
             // Render shape to export canvas
-            clearCanvas(exportCtx, '#ffffff');
+            clearCanvas(exportCtx);
 
             const shapeType = state.currentShape;
             const shape = state.shapes[shapeType];
@@ -936,16 +856,72 @@
         // ============================================
 
         function setupEventHandlers() {
+            // Canvas size controls
+            const canvasWidthSlider = document.getElementById('canvas-width');
+            const canvasWidthNum = document.getElementById('canvas-width-num');
+            const canvasHeightSlider = document.getElementById('canvas-height');
+            const canvasHeightNum = document.getElementById('canvas-height-num');
+
+            canvasWidthSlider.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                canvasWidthNum.value = value;
+                state.canvas.width = value;
+                canvas.width = value;
+                scheduleRender();
+            });
+
+            canvasWidthNum.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                canvasWidthSlider.value = value;
+                state.canvas.width = value;
+                canvas.width = value;
+                scheduleRender();
+            });
+
+            canvasHeightSlider.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                canvasHeightNum.value = value;
+                state.canvas.height = value;
+                canvas.height = value;
+                scheduleRender();
+            });
+
+            canvasHeightNum.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                canvasHeightSlider.value = value;
+                state.canvas.height = value;
+                canvas.height = value;
+                scheduleRender();
+            });
+
+            // Background controls
+            const bgTransparent = document.getElementById('bg-transparent');
+            const bgColorGroup = document.getElementById('bg-color-group');
+            const bgColor = document.getElementById('bg-color');
+            const bgColorHex = document.getElementById('bg-color-hex');
+
+            bgTransparent.addEventListener('change', (e) => {
+                state.background.transparent = e.target.checked;
+                bgColorGroup.style.opacity = e.target.checked ? '0.5' : '1';
+                scheduleRender();
+            });
+
+            bgColor.addEventListener('input', (e) => {
+                state.background.color = e.target.value;
+                bgColorHex.textContent = e.target.value;
+                scheduleRender();
+            });
+
             // Shape type selector
             document.getElementById('shape-type').addEventListener('change', (e) => {
                 switchShape(e.target.value);
             });
 
             // Circle controls
-            setupShapeControls('circle', ['radius', 'fill-color', 'stroke-color', 'stroke-width', 'opacity']);
+            setupShapeControls('circle', ['radius', 'stroke-color', 'stroke-width']);
 
             // Rectangle controls
-            setupShapeControls('rectangle', ['width', 'height', 'fill-color', 'stroke-color', 'stroke-width', 'opacity']);
+            setupShapeControls('rectangle', ['width', 'height', 'stroke-color', 'stroke-width']);
 
             // Export button
             document.getElementById('export-btn').addEventListener('click', openExportModal);
@@ -955,9 +931,6 @@
 
             document.getElementById('export-confirm').addEventListener('click', async () => {
                 // Update export settings from inputs
-                state.exportSettings.width = parseInt(document.getElementById('export-width').value);
-                state.exportSettings.height = parseInt(document.getElementById('export-height').value);
-                state.exportSettings.dpi = parseInt(document.getElementById('export-dpi').value);
                 state.exportSettings.filename = document.getElementById('export-filename').value;
 
                 // Validate
@@ -975,25 +948,10 @@
                 }
             });
 
-            // DPI presets
-            document.querySelectorAll('.dpi-preset').forEach(preset => {
-                preset.addEventListener('click', () => {
-                    const dpi = parseInt(preset.getAttribute('data-dpi'));
-                    document.getElementById('export-dpi').value = dpi;
-                    state.exportSettings.dpi = dpi;
-                });
-            });
-
             // Export settings inputs
-            ['width', 'height', 'dpi', 'filename'].forEach(field => {
-                const input = document.getElementById(`export-${field}`);
-                input.addEventListener('input', () => {
-                    if (field === 'filename') {
-                        state.exportSettings[field] = input.value;
-                    } else {
-                        state.exportSettings[field] = parseInt(input.value) || 0;
-                    }
-                });
+            const filenameInput = document.getElementById('export-filename');
+            filenameInput.addEventListener('input', () => {
+                state.exportSettings.filename = filenameInput.value;
             });
 
             // Keyboard accessibility: Close modal with Escape key
@@ -1021,7 +979,7 @@
             properties.forEach(prop => {
                 const propName = prop.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 
-                if (prop === 'fill-color' || prop === 'stroke-color') {
+                if (prop === 'stroke-color') {
                     // Color picker
                     const colorInput = document.getElementById(`${shapeType}-${prop}`);
                     const hexDisplay = document.getElementById(`${shapeType}-${prop.replace('color', 'hex')}`);
@@ -1032,7 +990,7 @@
                         hexDisplay.textContent = value;
                     });
                 } else {
-                    // Range slider
+                    // Range slider and number input
                     const rangeInput = document.getElementById(`${shapeType}-${prop}`);
                     const numberInput = document.getElementById(`${shapeType}-${prop}-num`);
 
@@ -1084,12 +1042,22 @@
             canvas = document.getElementById('preview-canvas');
             ctx = canvas.getContext('2d');
 
+            // Set canvas size from state
+            canvas.width = state.canvas.width;
+            canvas.height = state.canvas.height;
+
             // Setup event handlers
             setupEventHandlers();
 
             // Set initial shape type
             document.getElementById('shape-type').value = state.currentShape;
             switchShape(state.currentShape);
+
+            // Set initial background controls state
+            document.getElementById('bg-transparent').checked = state.background.transparent;
+            document.getElementById('bg-color').value = state.background.color;
+            document.getElementById('bg-color-hex').textContent = state.background.color;
+            document.getElementById('bg-color-group').style.opacity = state.background.transparent ? '0.5' : '1';
 
             // Initial render
             renderCurrentShape();
