@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Shape Generator - TorchEye Toolbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .shape-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .shape-btn {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .shape-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .shape-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .color-input-group {
+            display: grid;
+            grid-template-columns: 1fr 80px;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 44px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 4px;
+        }
+
+        .value-display {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #667eea;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .export-section {
+            border-top: 2px solid #f0f0f0;
+            padding-top: 25px;
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+
+        .canvas-panel {
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            min-height: 600px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <h1>Vector Shape Generator</h1>
+            <p class="subtitle">Create and export custom shapes</p>
+
+            <div class="section">
+                <div class="section-title">Shape Type</div>
+                <div class="shape-selector">
+                    <button class="shape-btn active" data-shape="circle">Circle</button>
+                    <button class="shape-btn" data-shape="rectangle">Rectangle</button>
+                </div>
+            </div>
+
+            <div id="circle-controls">
+                <div class="section">
+                    <div class="section-title">Size</div>
+                    <div class="control-group">
+                        <label for="radius">Radius</label>
+                        <input type="range" id="radius" min="10" max="300" value="100" step="1">
+                        <div class="value-display"><span id="radius-value">100</span> px</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="rectangle-controls" style="display: none;">
+                <div class="section">
+                    <div class="section-title">Size</div>
+                    <div class="control-group">
+                        <label for="width">Width</label>
+                        <input type="range" id="width" min="20" max="600" value="200" step="1">
+                        <div class="value-display"><span id="width-value">200</span> px</div>
+                    </div>
+                    <div class="control-group">
+                        <label for="height">Height</label>
+                        <input type="range" id="height" min="20" max="600" value="150" step="1">
+                        <div class="value-display"><span id="height-value">150</span> px</div>
+                    </div>
+                    <div class="control-group">
+                        <label for="corner-radius">Corner Radius</label>
+                        <input type="range" id="corner-radius" min="0" max="100" value="0" step="1">
+                        <div class="value-display"><span id="corner-radius-value">0</span> px</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Fill</div>
+                <div class="control-group">
+                    <label for="fill-color">Fill Color</label>
+                    <div class="color-input-group">
+                        <input type="color" id="fill-color" value="#667eea">
+                        <div class="value-display" id="fill-color-value">#667eea</div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="fill-opacity">Fill Opacity</label>
+                    <input type="range" id="fill-opacity" min="0" max="100" value="100" step="1">
+                    <div class="value-display"><span id="fill-opacity-value">100</span>%</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Stroke</div>
+                <div class="control-group">
+                    <label for="stroke-color">Stroke Color</label>
+                    <div class="color-input-group">
+                        <input type="color" id="stroke-color" value="#333333">
+                        <div class="value-display" id="stroke-color-value">#333333</div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="stroke-width">Stroke Width</label>
+                    <input type="range" id="stroke-width" min="0" max="50" value="2" step="1">
+                    <div class="value-display"><span id="stroke-width-value">2</span> px</div>
+                </div>
+                <div class="control-group">
+                    <label for="stroke-opacity">Stroke Opacity</label>
+                    <input type="range" id="stroke-opacity" min="0" max="100" value="100" step="1">
+                    <div class="value-display"><span id="stroke-opacity-value">100</span>%</div>
+                </div>
+            </div>
+
+            <div class="section export-section">
+                <div class="section-title">Export Settings</div>
+                <div class="control-group">
+                    <label for="export-width">Export Width (px)</label>
+                    <input type="number" id="export-width" value="800" min="100" max="4000">
+                </div>
+                <div class="control-group">
+                    <label for="export-height">Export Height (px)</label>
+                    <input type="number" id="export-height" value="800" min="100" max="4000">
+                </div>
+                <button class="export-btn" id="export-btn">Export as PNG</button>
+            </div>
+        </div>
+
+        <div class="panel canvas-panel">
+            <svg id="canvas" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+                <circle id="shape-circle" cx="400" cy="400" r="100" fill="#667eea" stroke="#333333" stroke-width="2"/>
+                <rect id="shape-rectangle" x="300" y="325" width="200" height="150" fill="#667eea" stroke="#333333" stroke-width="2" rx="0" style="display: none;"/>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentShape = 'circle';
+        const state = {
+            circle: {
+                radius: 100,
+                fillColor: '#667eea',
+                fillOpacity: 100,
+                strokeColor: '#333333',
+                strokeWidth: 2,
+                strokeOpacity: 100
+            },
+            rectangle: {
+                width: 200,
+                height: 150,
+                cornerRadius: 0,
+                fillColor: '#667eea',
+                fillOpacity: 100,
+                strokeColor: '#333333',
+                strokeWidth: 2,
+                strokeOpacity: 100
+            }
+        };
+
+        // DOM elements
+        const shapeCircle = document.getElementById('shape-circle');
+        const shapeRectangle = document.getElementById('shape-rectangle');
+        const circleControls = document.getElementById('circle-controls');
+        const rectangleControls = document.getElementById('rectangle-controls');
+
+        // Shape selection
+        document.querySelectorAll('.shape-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentShape = btn.dataset.shape;
+
+                if (currentShape === 'circle') {
+                    shapeCircle.style.display = 'block';
+                    shapeRectangle.style.display = 'none';
+                    circleControls.style.display = 'block';
+                    rectangleControls.style.display = 'none';
+                } else {
+                    shapeCircle.style.display = 'none';
+                    shapeRectangle.style.display = 'block';
+                    circleControls.style.display = 'none';
+                    rectangleControls.style.display = 'block';
+                }
+
+                updateShape();
+            });
+        });
+
+        // Circle controls
+        const radiusInput = document.getElementById('radius');
+        const radiusValue = document.getElementById('radius-value');
+        radiusInput.addEventListener('input', (e) => {
+            state.circle.radius = parseInt(e.target.value);
+            radiusValue.textContent = e.target.value;
+            updateShape();
+        });
+
+        // Rectangle controls
+        const widthInput = document.getElementById('width');
+        const widthValue = document.getElementById('width-value');
+        widthInput.addEventListener('input', (e) => {
+            state.rectangle.width = parseInt(e.target.value);
+            widthValue.textContent = e.target.value;
+            updateShape();
+        });
+
+        const heightInput = document.getElementById('height');
+        const heightValue = document.getElementById('height-value');
+        heightInput.addEventListener('input', (e) => {
+            state.rectangle.height = parseInt(e.target.value);
+            heightValue.textContent = e.target.value;
+            updateShape();
+        });
+
+        const cornerRadiusInput = document.getElementById('corner-radius');
+        const cornerRadiusValue = document.getElementById('corner-radius-value');
+        cornerRadiusInput.addEventListener('input', (e) => {
+            state.rectangle.cornerRadius = parseInt(e.target.value);
+            cornerRadiusValue.textContent = e.target.value;
+            updateShape();
+        });
+
+        // Fill controls
+        const fillColorInput = document.getElementById('fill-color');
+        const fillColorValue = document.getElementById('fill-color-value');
+        fillColorInput.addEventListener('input', (e) => {
+            const color = e.target.value;
+            state[currentShape].fillColor = color;
+            fillColorValue.textContent = color;
+            updateShape();
+        });
+
+        const fillOpacityInput = document.getElementById('fill-opacity');
+        const fillOpacityValue = document.getElementById('fill-opacity-value');
+        fillOpacityInput.addEventListener('input', (e) => {
+            state[currentShape].fillOpacity = parseInt(e.target.value);
+            fillOpacityValue.textContent = e.target.value;
+            updateShape();
+        });
+
+        // Stroke controls
+        const strokeColorInput = document.getElementById('stroke-color');
+        const strokeColorValue = document.getElementById('stroke-color-value');
+        strokeColorInput.addEventListener('input', (e) => {
+            const color = e.target.value;
+            state[currentShape].strokeColor = color;
+            strokeColorValue.textContent = color;
+            updateShape();
+        });
+
+        const strokeWidthInput = document.getElementById('stroke-width');
+        const strokeWidthValue = document.getElementById('stroke-width-value');
+        strokeWidthInput.addEventListener('input', (e) => {
+            state[currentShape].strokeWidth = parseInt(e.target.value);
+            strokeWidthValue.textContent = e.target.value;
+            updateShape();
+        });
+
+        const strokeOpacityInput = document.getElementById('stroke-opacity');
+        const strokeOpacityValue = document.getElementById('stroke-opacity-value');
+        strokeOpacityInput.addEventListener('input', (e) => {
+            state[currentShape].strokeOpacity = parseInt(e.target.value);
+            strokeOpacityValue.textContent = e.target.value;
+            updateShape();
+        });
+
+        // Update shape based on current state
+        function updateShape() {
+            if (currentShape === 'circle') {
+                const s = state.circle;
+                shapeCircle.setAttribute('r', s.radius);
+                shapeCircle.setAttribute('fill', s.fillColor);
+                shapeCircle.setAttribute('fill-opacity', s.fillOpacity / 100);
+                shapeCircle.setAttribute('stroke', s.strokeColor);
+                shapeCircle.setAttribute('stroke-width', s.strokeWidth);
+                shapeCircle.setAttribute('stroke-opacity', s.strokeOpacity / 100);
+            } else {
+                const s = state.rectangle;
+                shapeRectangle.setAttribute('width', s.width);
+                shapeRectangle.setAttribute('height', s.height);
+                shapeRectangle.setAttribute('x', (800 - s.width) / 2);
+                shapeRectangle.setAttribute('y', (800 - s.height) / 2);
+                shapeRectangle.setAttribute('rx', s.cornerRadius);
+                shapeRectangle.setAttribute('fill', s.fillColor);
+                shapeRectangle.setAttribute('fill-opacity', s.fillOpacity / 100);
+                shapeRectangle.setAttribute('stroke', s.strokeColor);
+                shapeRectangle.setAttribute('stroke-width', s.strokeWidth);
+                shapeRectangle.setAttribute('stroke-opacity', s.strokeOpacity / 100);
+            }
+        }
+
+        // Export to PNG
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const exportWidth = parseInt(document.getElementById('export-width').value);
+            const exportHeight = parseInt(document.getElementById('export-height').value);
+
+            const svg = document.getElementById('canvas');
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = exportWidth;
+                canvas.height = exportHeight;
+                const ctx = canvas.getContext('2d');
+
+                // Fill with white background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, exportWidth, exportHeight);
+
+                // Draw the SVG image
+                ctx.drawImage(img, 0, 0, exportWidth, exportHeight);
+
+                // Export as PNG
+                canvas.toBlob((blob) => {
+                    const link = document.createElement('a');
+                    link.download = `${currentShape}-${Date.now()}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(url);
+                });
+            };
+            img.src = url;
+        });
+
+        // Initialize
+        updateShape();
+    </script>
+</body>
+</html>

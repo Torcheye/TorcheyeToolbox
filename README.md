@@ -38,6 +38,27 @@ TorchEye Games Toolbox is a centralized hub for game development tools and resou
 
 ## Available Tools
 
+### Vector Shape Generator
+
+A modern web-based tool for creating and exporting customizable vector shapes. Perfect for quickly generating game UI elements, icons, and simple graphics.
+
+**Features:**
+- Interactive shape creation (Circle, Rectangle)
+- Real-time customization controls:
+  - Adjustable size parameters (radius, width, height)
+  - Fill and stroke colors with hex preview
+  - Opacity controls for both fill and stroke
+  - Rounded corners for rectangles
+  - Stroke width adjustment
+- Clean, modern gradient-based UI
+- Export to PNG with custom resolution
+- Responsive design with live preview
+
+**Quick Start:**
+Simply open `vector-shape-generator.html` in any modern web browser. No installation required!
+
+---
+
 ### Image to WebP Converter
 
 A lightweight desktop GUI application for batch converting image files to WebP format, perfect for optimizing game assets and web resources.
