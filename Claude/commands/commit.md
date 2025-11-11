@@ -1,0 +1,1 @@
+Invoke unity-commit-manager to check for all present changes and make atomic commits, except for scene files and large binary files
