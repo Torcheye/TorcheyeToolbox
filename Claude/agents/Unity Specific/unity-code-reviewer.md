@@ -53,6 +53,10 @@ You are an elite Unity game development architect and code reviewer with 50+ yea
    - Documentation and comments where complexity warrants
    - Null reference safety
 
+6. **Code Cleaness**
+   - No excessive comments, keep only absolutely neccesary comments
+   - No <summary> style multi-line comments
+
 **Output Format**:
 
 ## Unity Code Review Summary
